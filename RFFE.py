@@ -2,7 +2,7 @@ import sys
 import os
 import time
 from epics import *
-
+import time
 
 class RFFE:
 	
@@ -15,8 +15,10 @@ class RFFE:
 		self.att2set = PV("BPM:FRONTEND"+str(number)+":attenuator2:setValue")
 	def setSWITCH(self,state):
 		if state=="DIRECT" or state=="INVERT" or state=="MATCHED" or state=="SWITCHING":
-			self.swiset.value = state
-			new_state = self.swiget.get()
+			self.swiset.value = str(state)
+			time.sleep(5.0)#TODO:if record is passive, still necessary?
+			new_state = self.swiget.get(as_string=True)
+			print state + " and " + new_state
 			if state == new_state:
 				return True
 			return False
@@ -27,8 +29,8 @@ class RFFE:
 		if att_num == 1:
 			if value < 31.5 and value > 0.0:
 				self.att1set.value = float(value)
+				time.sleep(5.0)#TODO:if record is passive, still necessary?
 				new_value = self.att1get.get()
-				print new_value
 				if new_value == value:
 					return True
 				return False
@@ -36,7 +38,8 @@ class RFFE:
 				return False
 		elif att_num == 2:
 			if value < 31.5 and value > 0.0:
-				self.att2set.value = value
+				self.att2set.value = float(value)
+				time.sleep(5.0)#TODO:if record is passive, still necessary?
 				new_value = self.att2get.get()
 				if new_value == value:
 					return True
